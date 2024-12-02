@@ -16,6 +16,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     private DoodleView doodleView;
     private int currentBrushSize = 10;
+    private int currentOpacity = 255; // Default fully opaque
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,21 @@ public class MainActivity extends Activity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 currentBrushSize = progress;
                 doodleView.setBrushSize(currentBrushSize);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        SeekBar opacityBar = findViewById(R.id.opacityBar);
+        opacityBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                currentOpacity = progress;
+                doodleView.setBrushOpacity(currentOpacity);
             }
 
             @Override

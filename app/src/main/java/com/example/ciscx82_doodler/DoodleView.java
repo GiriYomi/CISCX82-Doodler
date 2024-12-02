@@ -21,6 +21,7 @@ public class DoodleView extends View {
         paint.setAntiAlias(true);
         paint.setColor(0xFF000000); // Default to black
         paint.setStrokeWidth(10);
+        paint.setAlpha(255); // Default fully opaque
 
         points = new ArrayList<>();
     }
@@ -31,6 +32,7 @@ public class DoodleView extends View {
         for (Point point : points) {
             paint.setStrokeWidth(point.size);
             paint.setColor(point.color);
+            paint.setAlpha(point.opacity);
             canvas.drawCircle(point.x, point.y, point.size / 2, paint);
         }
     }
@@ -38,7 +40,7 @@ public class DoodleView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE || event.getAction() == MotionEvent.ACTION_DOWN) {
-            points.add(new Point(event.getX(), event.getY(), paint.getColor(), paint.getStrokeWidth()));
+            points.add(new Point(event.getX(), event.getY(), paint.getColor(), paint.getAlpha(), paint.getStrokeWidth()));
             invalidate();
         }
         return true;
@@ -49,7 +51,14 @@ public class DoodleView extends View {
     }
 
     public void setBrushColor(int color) {
+        int currentOpacity = paint.getAlpha(); // Get the current opacity
         paint.setColor(color);
+        paint.setAlpha(currentOpacity); // Restore the opacity
+    }
+
+
+    public void setBrushOpacity(int opacity) {
+        paint.setAlpha(opacity);
     }
 
     public void clearCanvas() {
@@ -60,12 +69,14 @@ public class DoodleView extends View {
     private static class Point {
         float x, y;
         int color;
+        int opacity;
         float size;
 
-        Point(float x, float y, int color, float size) {
+        Point(float x, float y, int color, int opacity, float size) {
             this.x = x;
             this.y = y;
             this.color = color;
+            this.opacity = opacity;
             this.size = size;
         }
     }
