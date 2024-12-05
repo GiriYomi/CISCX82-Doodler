@@ -3,6 +3,7 @@ package com.example.ciscx82_doodler;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +14,7 @@ import java.util.List;
 public class DoodleView extends View {
     private Paint paint;
     private List<Point> points;
+    private Bitmap backgroundBitmap;
 
     public DoodleView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -29,6 +31,12 @@ public class DoodleView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        // Draw the background bitmap if available
+        if (backgroundBitmap != null) {
+            canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+        }
+
         for (Point point : points) {
             paint.setStrokeWidth(point.size);
             paint.setColor(point.color);
@@ -56,13 +64,13 @@ public class DoodleView extends View {
         paint.setAlpha(currentOpacity); // Restore the opacity
     }
 
-
     public void setBrushOpacity(int opacity) {
         paint.setAlpha(opacity);
     }
 
     public void clearCanvas() {
         points.clear();
+        backgroundBitmap = null;
         invalidate();
     }
 
@@ -79,5 +87,19 @@ public class DoodleView extends View {
             this.opacity = opacity;
             this.size = size;
         }
+    }
+
+    // Method to get the bitmap of the current doodle
+    public Bitmap getBitmap() {
+        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        draw(canvas); // Draw the view onto the canvas
+        return bitmap;
+    }
+
+    // Method to load a bitmap as background
+    public void loadBitmap(Bitmap bitmap) {
+        backgroundBitmap = Bitmap.createScaledBitmap(bitmap, getWidth(), getHeight(), true);
+        invalidate();
     }
 }
